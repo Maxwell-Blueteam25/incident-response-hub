@@ -85,6 +85,45 @@ This investigation confirmed a high-confidence phishing attempt leveraging a spo
 ## Sample KQL Queries
 
 
+// Email Metadata Query
+EmailEvents
+| where SenderFromAddress == "redacted@dolese.cam"
+| project Timestamp, RecipientEmailAddress, Subject
+
+// URL Extraction
+EmailEvents 
+| where SenderFromAddress == "redacted" 
+| project NetworkMessageId, SenderFromAddress, RecipientEmailAddress, Subject 
+| join kind=inner ( 
+    EmailUrlInfo 
+    | project NetworkMessageId, Url 
+) on NetworkMessageId
+
+// Attachment Extraction
+EmailEvents 
+| where SenderFromAddress == "redacted" 
+| project NetworkMessageId, SenderFromAddress, RecipientEmailAddress, Subject 
+| join kind=inner ( 
+    EmailAttachmentInfo 
+    | project NetworkMessageId, FileName, FileType, SHA256 
+) on NetworkMessageId
+
+// User Click and Impact Tracking - Attachments
+EmailAttachmentInfo
+| where Timestamp >= ago(7d)
+| where FileName endswith ".doc" or FileName endswith ".pdf" or FileName endswith ".exe"
+| where SenderFromAddress !startswith "redacted"
+| project Timestamp, RecipientEmailAddress, SenderFromAddress, FileName, SHA256
+
+// User Click and Impact Tracking - URL Clicks
+EmailEvents
+| where SenderFromAddress == "redacted@dolese.cam"
+| project Timestamp, RecipientEmailAddress, Subject, NetworkMessageId
+| join kind=inner (
+    UrlClickEvents
+    | where Url contains "docs.google.com"
+    | project NetworkMessageId, ClickTimestamp = Timestamp, UserId, Url, DeviceName, Application
+) on NetworkMessageId
 
 
 **Email Metadata Query:**
@@ -95,6 +134,7 @@ EmailEvents
 
 
 **URL Extraction:**
+
 EmailEvents 
 | where SenderFromAddress == "redacted" 
 | project NetworkMessageId, SenderFromAddress, RecipientEmailAddress, 
