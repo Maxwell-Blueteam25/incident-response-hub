@@ -1,5 +1,3 @@
-Certainly! Here’s a polished **GitHub-ready Markdown report** for your phishing investigation that highlights your role creating the playbook, walks through the lifecycle, and shows professional-level detail and clarity:
-
 
 # Phishing Incident Response Report  
 ### Credential Harvesting Attempt via `dolese.cam`
