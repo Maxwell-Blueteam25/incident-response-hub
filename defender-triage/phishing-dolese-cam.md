@@ -130,11 +130,20 @@ EmailEvents
     | project NetworkMessageId, ClickTimestamp = Timestamp, UserId, Url, DeviceName, Application
 ) on NetworkMessageId
 
+**Evidence and Screenshots:**
 
 ![Access the PDF](https://github.com/user-attachments/assets/9f9308cf-3498-4449-9542-ec4818b655c2)
 
+![Credential Capture Page](https://github.com/user-attachments/assets/f6cf6dbb-90bc-4fcc-aafd-29f8b71c8e5d)
+
+![CredentialCapture Reputation](https://github.com/user-attachments/assets/ae88a7b4-eba0-49e7-aa4b-b002d1c824aa)
+
+![dolese cam reputation](https://github.com/user-attachments/assets/9594871e-0141-4a55-b2d9-88e81c8fc4ab)
 
 
+![SenderIP Spoofing and Spam1](https://github.com/user-attachments/assets/1bd31eb8-0a41-4642-a0d7-b71420aa3e82)
+
+![SenderIP Abusive1](https://github.com/user-attachments/assets/86e55c3c-ddfe-48ae-b645-2feb2be394fa)
 
 *Maxwell Skinner – Cybersecurity Intern*
 
