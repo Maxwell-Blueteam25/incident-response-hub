@@ -22,64 +22,91 @@ This report details a phishing investigation conducted using a custom phishing i
 
 ## Investigation Process
 
-### 1. Preparation & Detection
+## 1. 🛠 Preparation & Detection
 
-Using the playbook's predefined KQL queries in Microsoft Defender:
+### Tools & Techniques Used:
+- Microsoft Defender XDR with custom KQL queries  
+- Microsoft Header Analyzer  
+- VirusTotal & AbuseIPDB (OSINT)  
+- Browser-based sandbox environment  
 
-
-EmailEvents
-| where SenderFromAddress == "redacted@dolese.cam"
+### Initial Query to Identify Targeted Emails:
+EmailEvents  
+| where SenderFromAddress == "redacted@dolese.cam"  
 | project Timestamp, SenderFromAddress, RecipientEmailAddress, Subject, NetworkMessageId
 
+This allowed us to:  
+- Identify the recipient (only 1 user targeted)  
+- Extract metadata needed to pivot across email, URL, and attachment datasets  
+- Correlate the message using NetworkMessageId  
 
-* Isolated the email metadata to identify recipients and message details.
-* Extracted full email headers using Microsoft’s Email Header Analyzer to document sender IP and path.
+### Header Analysis:
+Parsed the full message headers using Microsoft’s analyzer to extract:  
+- Return-Path mismatch (spoofing indicator)  
+- Sender IP: 23.redacted.218.redacted  
+- Flagged on VirusTotal and AbuseIPDB with 29+ abuse reports  
+- Missing/invalid SPF, DKIM, DMARC  
+- Suspicious received path with multiple unexpected relays  
 
-### 2. Analysis
+## 2. 🔍 In-Depth Analysis
 
-* **Sender IP:** `23.redacted.218.redacted`
+### Domain & IP Reputation:
+- The .cam domain had prior phishing history  
+- The specific sender IP had a high confidence score for abuse  
 
-  * Flagged for multiple abuses (phishing, spoofing, spam) on VirusTotal and AbuseIPDB.
-* **Sender Domain:** `redacted.cam`
+### URL Inspection:
+Queried the EmailUrlInfo and UrlClickEvents tables:
 
-  * Previously reported for phishing activity.
-* **Link Inspection:**
+EmailEvents  
+| where SenderFromAddress == "redacted"  
+| join kind=inner (  
+    EmailUrlInfo  
+    | project NetworkMessageId, Url  
+) on NetworkMessageId
 
-  * The "OneDrive" link was actually a Google Docs URL.
-  * Sandbox analysis confirmed it redirected users to a convincing but fake Microsoft login page for credential capture.
-* **User Impact:**
+Result:  
+- The "OneDrive" link pointed to docs.google.com, which redirected to a spoofed Microsoft login page  
+- Sandbox testing revealed the document included a “Request Access” button triggering the credential capture redirect  
 
-  * Confirmed only one recipient got the email.
-  * No evidence of account compromise or unauthorized sign-ins after the event.
+### Impact Scope:
+UrlClickEvents  
+| where Url contains "docs.google.com"  
+| project Timestamp, UserId, Url
 
-### 3. Containment & Mitigation
+Only one user interacted with the link.  
+No evidence of:  
+- Credential reuse or session hijacking  
+- Anomalous sign-ins or token abuse (SigninLogs queried)  
+- Lateral movement or OAuth app abuse  
 
-* Blocked the domain `redacted.cam` and IP `23.redacted.218.redacted` using Microsoft Defender email filters.
-* Purged the phishing email from the affected user's mailbox via the Microsoft Compliance Center.
-* Documented all malicious IPs, domains, URLs, and file hashes for future threat intelligence.
-* Provided phishing awareness guidance to the reporting employee.
+## 3. 🔒 Containment & Mitigation
 
-### 4. Lessons Learned
+### Immediate Actions:
+- Domain/IP Blocked: Configured Microsoft Defender policies to block dolese.cam and 23.redacted.218.redacted  
+- Email Purged: Used Microsoft Compliance Center tools to remove the message from the user’s mailbox  
 
-* The playbook standardized the investigation, enabling fast and thorough response.
-* Future enhancements include automated domain reputation checks and expanded detection for uncommon TLDs.
-* User training remains critical to reduce risk from social engineering.
+### Threat Artifacts Logged:
+- IP address  
+- Domain  
+- Spoofed URL path  
+- SHA256 hashes (if any)  
+- All indicators documented and archived in internal TI collection  
 
----
+### User Engagement:
+- The user was notified and provided phishing awareness guidance  
+- Incident used as a training opportunity in team sync  
 
-## Tools & Techniques Used
+## 4. 🧠 Lessons Learned
 
-* Microsoft Defender XDR & KQL queries (customized in the playbook)
-* Microsoft Email Header Analyzer
-* VirusTotal & AbuseIPDB for IP/domain reputation
-* Isolated sandbox environment for URL behavior analysis
-* Microsoft Compliance Center for email remediation
+✅ Strengths  
+- Rapid triage through standardized playbook  
+- KQL streamlined scoping, impact validation  
+- Effective sandboxing validated end-stage phishing  
 
-
-
-## Conclusion
-
-This investigation confirmed a high-confidence phishing attempt leveraging a spoofed Microsoft credential harvest. The incident was contained with no further impact, thanks to a robust detection and response process powered by the playbook I developed.
+🔧 Improvements  
+- Add auto-scoring for unusual TLDs (e.g., .cam, .zip, .mov)  
+- Integrate domain/IP reputation APIs for faster context  
+- Improve user training on link hovering and URL inspection  
 
 
 ## Sample KQL Queries
