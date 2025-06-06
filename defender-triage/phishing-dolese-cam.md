@@ -171,6 +171,6 @@ EmailEvents
 
 ![SenderIP Abusive1](https://github.com/user-attachments/assets/86e55c3c-ddfe-48ae-b645-2feb2be394fa)
 
-*Maxwell Skinner – Cybersecurity Intern*
+*Maxwell Skinner – Cybersecurity Analayst*
 
 
