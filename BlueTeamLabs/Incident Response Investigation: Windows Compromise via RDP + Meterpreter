@@ -1,0 +1,60 @@
+🎯 Objective
+This investigation simulates a real-world Windows workstation compromise involving an attack against internet-facing Remote Desktop Protocol (RDP), followed by the deployment of Meterpreter for post-exploitation. Using Security.evtx and System.evtx logs extracted from the compromised host, I applied DeepBlueCLI, PowerShell, and Event Viewer to trace attacker activity, persistence mechanisms, and privilege escalation techniques.
+
+🔧 Tools Used
+DeepBlueCLI (PowerShell-based log analysis)
+
+PowerShell (manual filtering and analysis)
+
+Event Viewer (manual inspection of event records)
+
+Security.evtx and System.evtx logs from Desktop\Investigation\ folder
+
+📝 Investigation Results
+🔍 Q1: Which user account ran GoogleUpdate.exe?
+Answer: Mike Smith
+Method:
+Using DeepBlue.ps1, I scanned the Security.evtx log for Event ID 4688 and filtered command-line execution entries. The user Mike Smith was identified as having executed GoogleUpdate.exe, a suspicious binary in this context.
+
+🔍 Q2: At what time is there likely evidence of Meterpreter activity?
+Answer: 4/10/2021 10:48:14 AM
+Method:
+DeepBlueCLI flagged suspicious command-line usage involving named pipes (|) and cmd.exe, which often indicates process communication for privilege escalation. This timestamp correlates with classic Meterpreter behavior (e.g., getsystem execution).
+
+🔍 Q3: What is the name of the suspicious service created?
+Answer: rztbzn
+Method:
+Using DeepBlueCLI against the System.evtx log, I identified the creation of a service with a randomized name, rztbzn, consistent with tactics used by malware or post-exploitation frameworks to establish persistence.
+
+🔍 Q4: What malicious executable was downloaded and used to gain a Meterpreter reverse shell?
+Answer: serviceupdate.exe
+User: Mike Smith
+Method:
+By filtering Event ID 4688 in Security.evtx between 10:30 AM – 10:50 AM on April 10, I found the executable serviceupdate.exe was launched from the Downloads folder. This is consistent with a user-initiated execution of a reverse shell payload.
+
+🔍 Q5: What was the command line used to create the persistence account?
+Answer: net user ServiceAct /add
+Method:
+Reviewing Event ID 4688 between 11:25 AM – 11:40 AM, I identified the use of the net user command to create a new local account named ServiceAct. This technique is commonly used to ensure attacker persistence.
+
+🔍 Q6: What two local groups was this new account added to?
+Answer: Administrators, Remote Desktop Users
+Method:
+Searching for Event ID 4732 (user added to local group) with keyword ServiceAct revealed that the new account was added to both the Administrators group and the Remote Desktop Users group, enabling full system control and remote access.
+
+🧠 Incident Summary
+The compromised Windows system was targeted via an exposed RDP service. The attacker successfully authenticated (possibly via brute force or stolen credentials) and then executed a staged payload (serviceupdate.exe) to gain a Meterpreter reverse shell around 10:48 AM.
+
+Using cmd.exe, the adversary created a new persistence user ServiceAct via net user and escalated its access by adding it to privileged groups (Administrators, Remote Desktop Users) between 11:25–11:40 AM. A suspicious service rztbzn was also created to maintain post-exploitation control.
+
+These tactics align with a standard MITRE ATT&CK flow:
+
+Initial Access: Brute-force RDP (T1110.001)
+
+Execution: serviceupdate.exe (T1059.003)
+
+Privilege Escalation: getsystem, named pipes (T1068)
+
+Persistence: Local account + service creation (T1136, T1543.003)
+
+Defense Evasion: Use of living-off-the-land binaries (net.exe, cmd.exe)
