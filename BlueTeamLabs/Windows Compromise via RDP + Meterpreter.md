@@ -22,6 +22,10 @@ This investigation simulates a real-world Windows workstation compromise involvi
 **Method:**  
 Using `DeepBlue.ps1`, I scanned the `Security.evtx` log for Event ID `4688` and filtered command-line execution entries. The user `Mike Smith` was identified as having executed `GoogleUpdate.exe`, a suspicious binary in this context.
 
+![Screenshot 2025-06-11 093657](https://github.com/user-attachments/assets/f2810e06-353d-4104-8084-2d8b22a7ac9c)
+
+![Screenshot 2025-06-11 093828](https://github.com/user-attachments/assets/e365f648-9252-4287-a165-720ac73e1b5b)
+
 ---
 
 ### 🔍 Q2: At what time is there likely evidence of Meterpreter activity?
@@ -29,12 +33,16 @@ Using `DeepBlue.ps1`, I scanned the `Security.evtx` log for Event ID `4688` and 
 **Method:**  
 DeepBlueCLI flagged suspicious command-line usage involving named pipes (`|`) and `cmd.exe`, which often indicates process communication for privilege escalation. This timestamp correlates with classic Meterpreter behavior (e.g., `getsystem` execution).
 
+![Screenshot 2025-06-11 093917](https://github.com/user-attachments/assets/b2149506-6afe-42b1-bb51-516e82bd903c)
+
 ---
 
 ### 🔍 Q3: What is the name of the suspicious service created?
 **Answer:** `rztbzn`  
 **Method:**  
 Using DeepBlueCLI against the `System.evtx` log, I identified the creation of a service with a randomized name, `rztbzn`, consistent with tactics used by malware or post-exploitation frameworks to establish persistence.
+
+![Screenshot 2025-06-11 093917](https://github.com/user-attachments/assets/5509adf3-a653-4b7b-b536-237726ca92ec)
 
 ---
 
@@ -44,6 +52,11 @@ Using DeepBlueCLI against the `System.evtx` log, I identified the creation of a 
 **Method:**  
 By filtering Event ID `4688` in `Security.evtx` between `10:30 AM – 10:50 AM` on April 10, I found the executable `serviceupdate.exe` was launched from the Downloads folder. This is consistent with a user-initiated execution of a reverse shell payload.
 
+![Screenshot 2025-06-11 085446](https://github.com/user-attachments/assets/66370060-789e-4b92-9f40-c7d17dd42069)
+
+![Screenshot 2025-06-11 085532](https://github.com/user-attachments/assets/e89dcc98-1396-486f-afd0-8a937b2816cc)
+
+
 ---
 
 ### 🔍 Q5: What was the command line used to create the persistence account?
@@ -51,12 +64,21 @@ By filtering Event ID `4688` in `Security.evtx` between `10:30 AM – 10:50 AM` 
 **Method:**  
 Reviewing Event ID `4688` between `11:25 AM – 11:40 AM`, I identified the use of the `net user` command to create a new local account named `ServiceAct`. This technique is commonly used to ensure attacker persistence.
 
+![Screenshot 2025-06-11 090754](https://github.com/user-attachments/assets/abc19bfa-d61c-4a59-9ecf-1a398d969add)
+
+![Screenshot 2025-06-11 090842](https://github.com/user-attachments/assets/83087e33-5e85-4f9f-a7c6-899559b12792)
+
 ---
 
 ### 🔍 Q6: What two local groups was this new account added to?
 **Answer:** `Administrators`, `Remote Desktop Users`  
 **Method:**  
 Searching for Event ID `4732` (user added to local group) with keyword `ServiceAct` revealed that the new account was added to both the `Administrators` group and the `Remote Desktop Users` group, enabling full system control and remote access.
+
+![Screenshot 2025-06-11 092813](https://github.com/user-attachments/assets/a69edac2-df09-43c9-a656-85123ceaa1cd)
+![Screenshot 2025-06-11 092848](https://github.com/user-attachments/assets/423f2d92-eabb-4956-92c4-46aef428e34f)
+![Screenshot 2025-06-11 092900](https://github.com/user-attachments/assets/ac89008d-cfea-4437-af09-df475cc809c0)
+
 
 ---
 
