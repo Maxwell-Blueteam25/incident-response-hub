@@ -38,12 +38,9 @@ EmailEvents
 | project RecipientEmailAddress, InternetMessageId, Subject, DeliveryStatus, Urls
 ```
 I found:
-
-Emails that made it past filtering.
-
-Links leading to phishing pages (sandboxed and confirmed to be credential capture kits).
-
-One user clicked the link and was later compromised from a new IP address in Germany (DE).
+- Emails that made it past filtering.
+- Links leading to phishing pages (sandboxed and confirmed to be credential capture kits).
+- One user clicked the link and was later compromised from a new IP address in Germany (DE).
 
 ## Step 3: Lateral Movement via IP Pivoting
 That same DE IP address was used to access another account. I ran:
