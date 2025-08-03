@@ -13,21 +13,36 @@ This folder contains real-world phishing investigations and incident triage work
 
 ---
 
-## 📁 Case Studies in This Folder
+📁 Case Studies in This Folder
 
-### `phishing-dolese-cam.md`
-- **Summary**: Investigated phishing message impersonating an invoice from a `.cam` domain
-- **Key Indicators**:
-  - IP flagged in VirusTotal/AbuseIPDB
-  - Domain used urgency and deception
-  - URL masqueraded as OneDrive, redirected to credential harvesting login page
-- **Actions Taken**:
-  - Full header analysis, IP/domain block, KQL triage to confirm single-user exposure
-  - Sandbox tested phishing flow and documented infrastructure
-- **NIST Phase Alignment**:
-  - Detection, Analysis, Containment, Lessons Learned
+**phishing-dolese-cam.md**  
+*Summary*: Investigated phishing message impersonating an invoice from a .cam domain  
+*Key Indicators*:  
+- IP flagged in VirusTotal/AbuseIPDB  
+- Domain used urgency and deception  
+- URL masqueraded as OneDrive, redirected to credential harvesting login page  
+*Actions Taken*:  
+- Full header analysis, IP/domain block, KQL triage to confirm single-user exposure  
+- Sandbox tested phishing flow and documented infrastructure  
+*NIST Phase Alignment*:  
+Detection, Analysis, Containment, Lessons Learned  
 
 ---
+
+**incident-mfa-bypass-takedown.md**  
+*Summary*: Tracked down a multi-user compromise stemming from MFA token theft via phishing proxy  
+*Key Indicators*:  
+- Foreign successful sign-ins marked "MFA satisfied"  
+- Pivotable IP addresses linked to multiple accounts  
+- Azure CLI abuse post-compromise  
+*Actions Taken*:  
+- KQL pivot across sign-ins, email events, and Azure activity logs  
+- Identified phishing domain (`9pz[.]org`) and sandboxed links  
+- Disabled accounts, blocked IPs/domains, reset credentials and MFA  
+- Verified no privilege escalation or persistence  
+*NIST Phase Alignment*:  
+Detection, Analysis, Containment, Eradication, Recovery, Lessons Learned
+
 
 ## 🔍 NIST Lifecycle in Action
 
