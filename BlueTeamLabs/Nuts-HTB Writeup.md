@@ -231,7 +231,7 @@ I discovered the attacker renamed the payload:
 
 ---
 
-## Conclusion
+## Conclusion And Timeline
 
 This lab highlights how **software supply chain compromises** can be staged via legitimate developer ecosystems (NuGet). The attacker leveraged **typosquatting**, **malicious scripts**, and **Defender evasion** to establish persistence and control over the system.
 
@@ -242,6 +242,10 @@ Even with attempted anti-forensics, artifacts in **PS history, browser logs, MFT
 * Developer ecosystems remain high-value targets.
 * Even partially disabled defenses can generate valuable telemetry.
 * Timeline building across multiple artifacts (PS history → MFT → Prefetch → USN) provides a full picture.
+
+
+<img width="1692" height="818" alt="Screenshot 2025-08-20 055113" src="https://github.com/user-attachments/assets/664b36f6-8df9-47fd-8f96-3fdedbc891b0" />
+
 
 ---
 
